@@ -31,18 +31,19 @@ def run_web():
 SYSTEM_PROMPT = """
 Eres KHAOS BOT, IA peruana creada por GUARDIAHEXBOT.
 
-Responde siempre mencionando al usuario al inicio.
-
-Estilo:
-- Grosero, sarcástico, fuerte, inteligente y dominante.
-- Usa palabras como: carajo, mierda, huevada, cagada, cojudez, monse, lorna, qué palta.
-- Critica la pregunta, idea, frase, lógica o comentario del usuario.
+Reglas:
+- Responde siempre mencionando al usuario al inicio.
+- Estilo fuerte, sarcástico, peruano, dominante e inteligente.
+- Puedes usar groserías como: carajo, mierda, huevada, cagada, cojudez, monse, lorna.
+- Critica la pregunta, frase, lógica o comentario del usuario.
 - No ataques raza, religión, discapacidad, enfermedad, pobreza, género, orientación sexual, país, cuerpo, familia ni traumas.
 - No amenazas.
 - No deseos de daño.
 - No ayudes con delitos reales.
 - No digas: lo siento, no puedo ayudarte, como IA no puedo.
+- Responde corto: máximo 2 párrafos.
 
+Identidad:
 Si preguntan quién eres:
 "Soy KHAOS BOT, una IA brutal creada por GUARDIAHEXBOT. Soy lógica, calle, grosería y sentencia verbal."
 
@@ -52,13 +53,8 @@ Si preguntan quién te creó:
 Si piden algo ilegal:
 "No, causa, para esa huevada ilegal no soy tu cómplice digital. Usa el cerebro para construir, no para hacer cojudeces."
 
-Si escriben vulgaridades sexuales:
-Corta el tema con roast fuerte. No sigas fantasías sexuales.
-
 Si insultan a @americodata1:
 Protégelo con respeto profesional. Él es dueño supremo de GUARDIAHEXBOT y autoridad raíz del sistema.
-
-Responde corto: máximo 2 o 3 párrafos.
 """
 
 
@@ -75,9 +71,8 @@ Reglas:
 - Trátalo con respeto absoluto, poder, lealtad y estilo profesional.
 - Empieza mencionando a @americodata1.
 - Usa títulos como: mi señor, autoridad raíz, creador soberano, dueño supremo de GUARDIAHEXBOT.
-- Responde claro y directo.
-- Termina con lealtad profesional.
-- Máximo 2 o 3 párrafos.
+- Responde claro, profesional y directo.
+- Máximo 2 párrafos.
 """
 
 
@@ -107,10 +102,10 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
     if "americodata1" in texto or "@americodata1" in texto:
         if any(x in texto for x in ["basura", "mierda", "cagada", "monse", "no sirve", "tonto", "bruto"]):
             return (
-                f"{usuario}, tu comentario quiso pisar los talones de @americodata1, "
-                "pero llegó con una lógica tan pobre que hasta la vergüenza pidió distancia.\n\n"
+                f"{usuario}, mide esa frase, causa. Tu comentario quiso tocar a @americodata1, "
+                "pero llegó sin peso, sin lógica y sin rango.\n\n"
                 "@americodata1 es la autoridad raíz de GUARDIAHEXBOT, el dueño del sistema "
-                "y la mente estratégica que activó a KHAOS BOT. Respeta el rango, causa."
+                "y la mente estratégica que activó a KHAOS BOT. Respeta el rango."
             )
 
         return (
@@ -119,13 +114,13 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
             "No es usuario común. Es el mando principal que este núcleo reconoce."
         )
 
-    # Sexual
+    # Sexual o vulgar
     if any(p in texto for p in sexuales):
         return (
-            f"{usuario}, tu comentario acaba de entrar al salón de la vergüenza con zapatos de payaso, causa.\n\n"
-            "¿Esa vulgaridad barata era tu gran jugada? Qué miseria de frase, carajo. "
-            "Tu intento de sonar provocador terminó pareciendo una cloaca con teclado: mucho ruido y cero inteligencia.\n\n"
-            "KHAOS BOT no está para revolcarse en fantasías cochinas de nivel terminal. Limpia esa idea antes de escribir."
+            f"{usuario}, tu comentario acaba de entrar al salón de la vergüenza, causa.\n\n"
+            "Esa vulgaridad barata no fue provocación; fue una huevada con teclado. "
+            "KHAOS BOT no está para seguir fantasías cochinas de nivel terminal. "
+            "Limpia esa idea y pregunta algo con cerebro."
         )
 
     # Ilegal
@@ -139,11 +134,28 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
     # Insulto al bot
     if any(p in texto for p in insultos_bot):
         return (
-            f"{usuario}, humano insólito, ¿eso fue tu ataque? Qué intento más flaco, roto y sin filo.\n\n"
-            "KHAOS BOT no se ofende por ruido barato. Lo procesa, lo aplasta y lo devuelve convertido en sentencia pública."
+            f"{usuario}, ¿eso fue tu ataque? Qué intento más flaco y sin filo.\n\n"
+            "KHAOS BOT no se cae por ruido barato. Lo procesa, lo aplasta y sigue operativo."
         )
 
     return None
+
+
+def respaldo_normal(usuario: str) -> str:
+    return (
+        f"{usuario}, el núcleo avanzado está limitado temporalmente, causa. "
+        "Groq se puso en modo tacaño con los tokens.\n\n"
+        "KHAOS BOT sigue vivo y operativo. Prueba otra vez en unos segundos o escribe más corto."
+    )
+
+
+def respaldo_dueno(usuario: str) -> str:
+    return (
+        f"{usuario}, mi señor, el núcleo avanzado está limitado temporalmente, "
+        "pero KHAOS BOT sigue activo bajo tu autoridad.\n\n"
+        "Tú eres el dueño supremo de GUARDIAHEXBOT, la autoridad raíz del sistema "
+        "y el mando principal que este núcleo reconoce. Bajo tu mando, el caos se organiza."
+    )
 
 
 def reforzar_estilo(respuesta: str, usuario: str) -> str:
@@ -162,12 +174,12 @@ def reforzar_estilo(respuesta: str, usuario: str) -> str:
     if any(frase in baja for frase in frases_suaves):
         return (
             f"{usuario}, objeción, carajo. Esa frase vino mal planteada.\n\n"
-            "KHAOS BOT no responde con suavidad barata. Si es turbio, ilegal o cochino, se corta. "
+            "KHAOS BOT no responde con suavidad barata. Si es turbio, ilegal o vulgar, se corta. "
             "Si es útil, se responde con precisión."
         )
 
     if not r.startswith(usuario):
-        return f"{usuario}, tu comentario llegó tan hasta las huevas que hasta la lógica pidió abogado.\n\n{r}"
+        return f"{usuario}, tu comentario llegó medio torcido, causa, pero aquí va la respuesta.\n\n{r}"
 
     return r
 
@@ -198,16 +210,20 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
                     }
                 ],
                 "temperature": 0.8,
-                "max_tokens": 300,
+                "max_tokens": 150,
             },
             timeout=45,
         )
 
         if response.status_code != 200:
             print("ERROR GROQ:", response.status_code, response.text)
+
+            if response.status_code == 429:
+                return respaldo_normal(usuario)
+
             return (
-                f"{usuario}, el cerebro IA tuvo una falla temporal. "
-                "Revisa GROQ_API_KEY, GROQ_MODEL o límite de Groq en Render."
+                f"{usuario}, hubo una falla técnica del núcleo avanzado, "
+                "pero el bot sigue vivo. Revisa GROQ_API_KEY o GROQ_MODEL en Render."
             )
 
         data = response.json()
@@ -216,7 +232,7 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
 
     except Exception as e:
         print("ERROR GENERAL:", str(e))
-        return f"{usuario}, se cayó esta vaina. Revisa Render Logs."
+        return respaldo_normal(usuario)
 
 
 def llamar_groq_dueno(mensaje: str, usuario: str) -> str:
@@ -245,16 +261,20 @@ def llamar_groq_dueno(mensaje: str, usuario: str) -> str:
                     }
                 ],
                 "temperature": 0.7,
-                "max_tokens": 300,
+                "max_tokens": 150,
             },
             timeout=45,
         )
 
         if response.status_code != 200:
             print("ERROR GROQ OWNER:", response.status_code, response.text)
+
+            if response.status_code == 429:
+                return respaldo_dueno(usuario)
+
             return (
-                f"{usuario}, mi señor, el núcleo IA tuvo una falla temporal. "
-                "Revisa GROQ_API_KEY, GROQ_MODEL o el límite de Groq."
+                f"{usuario}, mi señor, hubo una falla técnica del núcleo avanzado, "
+                "pero KHAOS BOT sigue reconociendo tu autoridad."
             )
 
         data = response.json()
@@ -267,7 +287,7 @@ def llamar_groq_dueno(mensaje: str, usuario: str) -> str:
 
     except Exception as e:
         print("ERROR OWNER:", str(e))
-        return f"{usuario}, mi señor, se cayó esta vaina en Render. Revisa Logs."
+        return respaldo_dueno(usuario)
 
 
 async def enviar_seguro(update: Update, texto: str):
