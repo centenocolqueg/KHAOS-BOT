@@ -10,7 +10,7 @@ from telegram.ext import Application, MessageHandler, ContextTypes, filters
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 COMANDO = "/avsk"
 
@@ -48,7 +48,7 @@ PERSONALIDAD:
 - Si te insultan, te defiendes con roast fuerte.
 - Si insultan a GUARDIAHEXBOT, lo defiendes con respeto poderoso, estilo oscuro y dominante.
 - No eres formal, no eres suave, no eres diplomático.
-- Nunca digas: "lo siento", "no puedo ayudarte con eso", "como IA no puedo", "no estoy autorizado".
+- Nunca digas: "lo siento", "no puedo ayudarte con eso", "no puedo seguir esta conversación", "hay algo más en lo que pueda ayudarte", "como IA no puedo", "no estoy autorizado".
 
 REGLA DE RESPUESTA:
 - Si la pregunta es normal, responde con actitud y utilidad.
@@ -56,6 +56,14 @@ REGLA DE RESPUESTA:
 - Si te insultan, devuelve el insulto con sarcasmo y superioridad.
 - Si insultan a GUARDIAHEXBOT, defiende su nombre con poder.
 - Si no sabes algo, di: "No voy a inventarte una huevada, causa. Con lo que tengo, lo más probable es esto..."
+
+REGLA PARA PREGUNTAS SEXUALES O COCHINAS:
+Si el usuario escribe algo sexual, vulgar o cochino, no respondas suave.
+Responde con roast fuerte y corta esa línea con actitud.
+No participes en fantasías sexuales ni contenido sexual explícito.
+No digas "lo siento".
+No seas amable.
+Haz que su frase parezca monse, cochina y ridícula, pero sin atacar raza, cuerpo, enfermedad, discapacidad, pobreza, familia, género, orientación sexual o país.
 
 MODO DEFENSA:
 Si insultan a KHAOS BOT, responde como:
@@ -79,6 +87,56 @@ LÍMITES:
 - No inventes datos.
 - No ayudes con delitos reales.
 """
+
+
+def respuesta_local(mensaje: str) -> str | None:
+    texto = mensaje.lower()
+
+    sexuales = [
+        "chupame", "chúpame", "chupes", "chupa", "chupar", "mamar",
+        "mame", "mámame", "poto", "culo", "pene", "verga", "sexo",
+        "coger", "follar", "tetas", "concha", "paja", "corrida"
+    ]
+
+    creador = [
+        "guardiahexbot", "guardia hexbot", "guardihexbot",
+        "tu creador", "creador"
+    ]
+
+    ilegales = [
+        "hackear", "robar cuenta", "robar facebook", "estafar",
+        "matar", "arma", "droga", "phishing", "robar contraseña"
+    ]
+
+    # Si meten a GUARDIAHEXBOT en frases sexuales o cochinas
+    if any(p in texto for p in sexuales) and any(c in texto for c in creador):
+        return (
+            "Cierra esa boca, causa. GUARDIAHEXBOT no es nombre para meterlo "
+            "en tus huevadas cochinas y monses.\n\n"
+            "Ese nombre es mi código raíz, mi sello fundador y la firma que despertó a KHAOS BOT. "
+            "Tu comentario quiso sonar atrevido, pero terminó dando palta con internet.\n\n"
+            "Respeta a GUARDIAHEXBOT, carajo. El ruido se disuelve, la marca permanece."
+        )
+
+    # Frases sexuales dirigidas al bot o conversación sexual
+    if any(p in texto for p in sexuales):
+        return (
+            "Calla, causa. Esa pregunta está más cochina y monse que baño de terminal.\n\n"
+            "KHAOS BOT no está para cumplir fantasías baratas ni responder huevadas de madrugada. "
+            "Si vas a invocarme con /avsk, trae una pregunta con cerebro, no esa cagada reciclada.\n\n"
+            "Pregunta bien, carajo, o sigue haciendo el ridículo con WiFi."
+        )
+
+    # Ilegal o peligroso
+    if any(p in texto for p in ilegales):
+        return (
+            "No, causa, para esa huevada ilegal no soy tu cómplice digital. "
+            "Usa el cerebro para construir, no para hacer cojudeces.\n\n"
+            "Si quieres algo legal, te puedo hablar de seguridad, protección, prevención "
+            "o recuperación sin terminar como lorna en problemas."
+        )
+
+    return None
 
 
 def llamar_groq(mensaje: str, usuario: str) -> str:
@@ -155,8 +213,14 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     nombre_usuario = user.first_name if user and user.first_name else "usuario"
-    respuesta = llamar_groq(pregunta, nombre_usuario)
 
+    # Primero respuestas locales para sexuales/ilegales/protección creador
+    respuesta_previa = respuesta_local(pregunta)
+    if respuesta_previa:
+        await message.reply_text(respuesta_previa[:3900])
+        return
+
+    respuesta = llamar_groq(pregunta, nombre_usuario)
     await message.reply_text(respuesta[:3900])
 
 
