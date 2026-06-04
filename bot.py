@@ -1,4 +1,5 @@
 import os
+import asyncio
 import requests
 from threading import Thread
 from flask import Flask
@@ -13,12 +14,14 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
 
 COMANDO = "/avsk"
 
-# Mini web server para que Render Web Service no falle
+# Mini servidor web para que Render Web Service salga LIVE
 web_app = Flask(__name__)
+
 
 @web_app.get("/")
 def home():
     return "KHAOS BOT activo"
+
 
 def run_web():
     port = int(os.getenv("PORT", 10000))
@@ -80,7 +83,7 @@ LÍMITES:
 
 def llamar_groq(mensaje: str, usuario: str) -> str:
     if not GROQ_API_KEY:
-        return "Falta GROQ_API_KEY, causa. Sin cerebro IA, este bot queda más vacío que promesa de político."
+        return "Falta GROQ_API_KEY, causa. Sin cerebro IA, este bot queda vacío."
 
     try:
         response = requests.post(
@@ -113,7 +116,7 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
 
     except Exception as e:
         print("ERROR GENERAL:", str(e))
-        return "Se cayó esta vaina, causa. Revisa Render Logs antes de culpar al universo."
+        return "Se cayó esta vaina, causa. Revisa Render Logs."
 
 
 async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -126,7 +129,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     texto = message.text.strip()
 
-    # Bloquear privado
+    # En privado responde solo aviso
     if chat.type == "private":
         await message.reply_text(
             "Este bot solo funciona en grupos, causa. Mételo a un grupo y usa /avsk."
@@ -147,7 +150,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not pregunta:
         await message.reply_text(
-            "Escribe algo después de /avsk, causa. No soy adivino de feria."
+            "Escribe algo después de /avsk, causa. No soy adivino."
         )
         return
 
@@ -161,6 +164,11 @@ def main():
     if not BOT_TOKEN:
         raise RuntimeError("Falta BOT_TOKEN en variables de entorno.")
 
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT, manejar_mensaje))
 
@@ -169,5 +177,5 @@ def main():
 
 
 if __name__ == "__main__":
-    Thread(target=run_web).start()
+    Thread(target=run_web, daemon=True).start()
     main()
