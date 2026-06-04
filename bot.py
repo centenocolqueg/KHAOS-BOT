@@ -412,6 +412,18 @@ Responde con respeto, poder, claridad, lealtad y estilo profesional premium.
         )
 
 
+async def enviar_seguro(update: Update, texto: str):
+    chat = update.effective_chat
+
+    if not chat:
+        return
+
+    try:
+        await chat.send_message(texto[:3900])
+    except Exception as e:
+        print("ERROR ENVIAR SEGURO:", str(e))
+
+
 async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.effective_message
     chat = update.effective_chat
@@ -424,7 +436,8 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # En privado responde solo aviso
     if chat.type == "private":
-        await message.reply_text(
+        await enviar_seguro(
+            update,
             "Este bot solo funciona en grupos, causa. Mételo a un grupo y usa /avsk."
         )
         return
@@ -442,7 +455,8 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pregunta = texto[len(texto.split()[0]):].strip()
 
     if not pregunta:
-        await message.reply_text(
+        await enviar_seguro(
+            update,
             "Escribe algo después de /avsk, causa. No soy adivino, y tu comando vino vacío como idea sin futuro."
         )
         return
@@ -466,17 +480,17 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Modo dueño supremo
     if es_dueno:
         respuesta = llamar_groq_dueno(pregunta, nombre_usuario)
-        await message.reply_text(respuesta[:3900])
+        await enviar_seguro(update, respuesta)
         return
 
     # Modo KHAOS normal
     respuesta_previa = respuesta_local(pregunta, nombre_usuario)
     if respuesta_previa:
-        await message.reply_text(respuesta_previa[:3900])
+        await enviar_seguro(update, respuesta_previa)
         return
 
     respuesta = llamar_groq(pregunta, nombre_usuario)
-    await message.reply_text(respuesta[:3900])
+    await enviar_seguro(update, respuesta)
 
 
 def main():
