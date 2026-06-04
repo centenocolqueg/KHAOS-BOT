@@ -1,13 +1,29 @@
 import os
 import requests
+from threading import Thread
+from flask import Flask
+
 from telegram import Update
 from telegram.ext import Application, MessageHandler, ContextTypes, filters
+
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
 
 COMANDO = "/avsk"
+
+# Mini web server para que Render Web Service no falle
+web_app = Flask(__name__)
+
+@web_app.get("/")
+def home():
+    return "KHAOS BOT activo"
+
+def run_web():
+    port = int(os.getenv("PORT", 10000))
+    web_app.run(host="0.0.0.0", port=port)
+
 
 SYSTEM_PROMPT = """
 Eres KHAOS BOT, una IA peruana grosera, acusadora, sarcástica, brutal, dominante y muy inteligente.
@@ -61,6 +77,7 @@ LÍMITES:
 - No ayudes con delitos reales.
 """
 
+
 def llamar_groq(mensaje: str, usuario: str) -> str:
     if not GROQ_API_KEY:
         return "Falta GROQ_API_KEY, causa. Sin cerebro IA, este bot queda más vacío que promesa de político."
@@ -88,12 +105,14 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
         )
 
         if response.status_code != 200:
+            print("ERROR GROQ:", response.status_code, response.text)
             return "Se jodió el cerebro IA, causa. Revisa GROQ_API_KEY o el modelo en Render."
 
         data = response.json()
         return data["choices"][0]["message"]["content"].strip()
 
-    except Exception:
+    except Exception as e:
+        print("ERROR GENERAL:", str(e))
         return "Se cayó esta vaina, causa. Revisa Render Logs antes de culpar al universo."
 
 
@@ -107,17 +126,20 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     texto = message.text.strip()
 
+    # Bloquear privado
     if chat.type == "private":
         await message.reply_text(
             "Este bot solo funciona en grupos, causa. Mételo a un grupo y usa /avsk."
         )
         return
 
+    # Solo grupos y supergrupos
     if chat.type not in ["group", "supergroup"]:
         return
 
     primera_palabra = texto.split()[0].lower()
 
+    # Acepta /avsk y /avsk@NombreDelBot
     if not (primera_palabra == COMANDO or primera_palabra.startswith(COMANDO + "@")):
         return
 
@@ -147,4 +169,5 @@ def main():
 
 
 if __name__ == "__main__":
+    Thread(target=run_web).start()
     main()
