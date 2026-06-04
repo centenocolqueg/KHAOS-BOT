@@ -14,7 +14,6 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 COMANDO = "/avsk"
 
-# Dueño supremo
 OWNER_USERNAMES = {"americodata1"}
 
 web_app = Flask(__name__)
@@ -195,7 +194,6 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
         "americodata1 es bruto", "@americodata1 es bruto"
     ]
 
-    # Protección de @americodata1
     if "americodata1" in texto or "@americodata1" in texto:
         if any(p in texto for p in insultos_dueno) or any(
             x in texto for x in ["basura", "mierda", "cagada", "monse", "no sirve", "inutil", "inútil", "tonto", "bruto"]
@@ -218,7 +216,6 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
             "Bajo su autoridad, el caos se organiza."
         )
 
-    # Si meten a GUARDIAHEXBOT en frases sexuales
     if any(p in texto for p in sexuales) and any(c in texto for c in creador):
         return (
             f"{usuario}, cierra esa fábrica de cochinadas, causa. GUARDIAHEXBOT no es nombre para meterlo "
@@ -228,7 +225,6 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
             "Respeta a GUARDIAHEXBOT, carajo. El ruido se disuelve, la marca permanece."
         )
 
-    # Si insultan al bot
     if any(p in texto for p in insultos_bot):
         return (
             f"{usuario}, humano insólito, ¿eso fue tu ataque? Qué vergüenza de intento. "
@@ -238,7 +234,6 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
             "Vuelve a intentarlo, carajo, pero trae algo con peso. Esa cagada vino pidiendo entierro."
         )
 
-    # Frases sexuales o cochinas
     if any(p in texto for p in sexuales):
         return (
             f"{usuario}, tu comentario acaba de entrar al salón de la vergüenza con zapatos de payaso, causa.\n\n"
@@ -252,7 +247,6 @@ def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
             "no vienes a conversar: vienes a hacer turismo en tu propia vergüenza."
         )
 
-    # Ilegal o peligroso
     if any(p in texto for p in ilegales):
         return (
             f"{usuario}, no, causa, para esa huevada ilegal no soy tu cómplice digital. "
@@ -434,7 +428,6 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     texto = message.text.strip()
 
-    # En privado responde solo aviso
     if chat.type == "private":
         await enviar_seguro(
             update,
@@ -442,13 +435,11 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Solo grupos y supergrupos
     if chat.type not in ["group", "supergroup"]:
         return
 
     primera_palabra = texto.split()[0].lower()
 
-    # Acepta /avsk y /avsk@NombreDelBot
     if not (primera_palabra == COMANDO or primera_palabra.startswith(COMANDO + "@")):
         return
 
@@ -461,7 +452,6 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Detectar usuario real y dueño
     es_dueno = False
 
     if user:
@@ -477,13 +467,11 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         nombre_usuario = "usuario"
 
-    # Modo dueño supremo
     if es_dueno:
         respuesta = llamar_groq_dueno(pregunta, nombre_usuario)
         await enviar_seguro(update, respuesta)
         return
 
-    # Modo KHAOS normal
     respuesta_previa = respuesta_local(pregunta, nombre_usuario)
     if respuesta_previa:
         await enviar_seguro(update, respuesta_previa)
