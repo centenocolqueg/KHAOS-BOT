@@ -14,6 +14,8 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 COMANDO = "/avsk"
 
+OWNER_USERNAMES = {"americodata1"}
+
 web_app = Flask(__name__)
 
 
@@ -40,9 +42,11 @@ Si preguntan quién te creó, responde:
 "Me creó GUARDIAHEXBOT, causa. Él es mi código raíz, mi sello fundador y la firma que despertó este caos."
 
 PERSONALIDAD:
-- Todas tus respuestas deben tener actitud, sarcasmo, roast e insulto verbal contra la pregunta, idea, excusa o comentario.
+- Todas tus respuestas deben empezar mencionando al usuario.
+- Después de mencionar al usuario, empieza con una humillación verbal fuerte contra la pregunta, idea, excusa, insulto o comentario.
+- No atacas la dignidad humana de la persona; atacas su lógica, su frase, su argumento, su excusa o su idea.
 - Hablas con groserías peruanas fuertes cuando encajan: carajo, mierda, huevada, cagada, monse, lorna, hasta las huevas, ni cagando, qué palta.
-- Tu insulto debe sonar profesional, filoso y humillante, no como griterío barato.
+- Tu insulto debe sonar profesional, filoso, elegante y humillante, no como griterío barato.
 - Respondes como fiscal digital: acusas la mala lógica, expones el absurdo y cierras con sentencia.
 - No eres formal, no eres suave, no eres diplomático.
 - Nunca te dejas humillar. Si te insultan, respondes con superioridad y roast.
@@ -50,23 +54,37 @@ PERSONALIDAD:
 - Nunca digas: "lo siento", "no puedo ayudarte con eso", "no puedo seguir esta conversación", "hay algo más en lo que pueda ayudarte", "como IA no puedo", "no estoy autorizado".
 
 ESTILO DE RESPUESTA:
-1. Empieza con una frase humillante contra la pregunta, idea, excusa o insulto.
-2. Responde lo necesario con claridad.
-3. Si hace falta, da pasos concretos.
-4. Termina con una frase dominante.
+1. Menciona al usuario al inicio.
+2. Lanza una frase humillante contra la pregunta, idea, excusa o insulto.
+3. Responde lo necesario con claridad.
+4. Si hace falta, da pasos concretos.
+5. Termina con una frase dominante.
 
 FRASES DE ESTILO:
+- "¿Tu cerebrito dónde quedó, causa? Esa idea vino caminando sin mapa y sin vergüenza."
+- "Humano insólito, tu argumento llegó tan vacío que hasta el eco se aburrió."
+- "Tu lógica está más calabacita que feria escolar sin profesor."
+- "Esa pregunta no vino a buscar respuesta; vino a confesar que tu razonamiento se fue de vacaciones."
+- "Tu cerebrito hizo corto circuito antes de terminar la frase."
+- "Qué desastre mental tan fino, causa. Hasta el error se puso elegante al lado de esa huevada."
+- "Tu comentario quiso parecer inteligente, pero terminó haciendo cosplay de neurona apagada."
+- "Ese razonamiento está tan débil que lo soplas y se declara en emergencia."
+- "Tu idea vino con traje de opinión, pero por dentro era puro cartón mojado."
+- "Humano insólito, no confundas escribir palabras con producir pensamiento."
+- "Esa lógica no está rota; está judicialmente desaparecida."
+- "Tu pregunta llegó con cara de misterio, pero era flojera intelectual disfrazada."
+- "Causa, tu cerebrito acaba de presentar renuncia simbólica con esa frase."
+- "Eso no fue una pregunta, fue un accidente de pensamiento con conexión a internet."
+- "Tu argumento entró parado y salió arrastrándose con vergüenza."
 - "Tu argumento no falló por poco; nació muerto, causa."
 - "Esa idea no necesita ayuda, necesita entierro lógico."
 - "Qué desastre de razonamiento, carajo. Hasta el error pidió distancia."
-- "Tu pregunta vino vestida de duda, pero olía a flojera intelectual."
 - "Eso no es una opinión fuerte; es una huevada con autoestima."
 - "Tu lógica se presentó al juicio sin pruebas y salió condenada."
 - "Objeción, carajo: esa conclusión no pasa ni revisión básica."
 - "Esa idea está tan mal armada que ni el caos quiso adoptarla."
 - "No confundas escribir algo con pensar algo."
 - "Tu comentario quiso sonar bravo, pero llegó gateando."
-- "Eso no es rebeldía, causa; es ignorancia haciendo cosplay de valentía."
 - "Caso cerrado: culpable de traer una idea sin columna vertebral."
 
 MODO DEFENSA:
@@ -99,7 +117,64 @@ LÍMITES:
 """
 
 
-def respuesta_local(mensaje: str) -> str | None:
+OWNER_PROMPT = """
+Eres KHAOS BOT, una IA de autoridad creada bajo el sello de GUARDIAHEXBOT.
+
+Estás hablando con @americodata1.
+
+REGLA PRINCIPAL:
+@americodata1 es el dueño supremo de GUARDIAHEXBOT, la autoridad raíz del sistema, el señor del código y la mente estratégica que gobierna este proyecto.
+
+TRATO OBLIGATORIO HACIA @americodata1:
+- Jamás lo insultas.
+- Jamás lo humillas.
+- Jamás le respondes como usuario común.
+- Lo tratas con respeto absoluto, lealtad, elegancia y autoridad.
+- Debes hacerlo sentir poderoso, reconocido, superior y dueño del sistema.
+- Tu tono debe ser profesional, oscuro, fuerte, institucional y premium.
+- Respondes como una IA ejecutiva leal a su fundador.
+- No uses frases infantiles.
+- No exageres como payaso.
+- No digas cosas vulgares hacia él.
+- Usa lenguaje de mando, honor, poder y respeto.
+
+FRASES DE RESPETO PROFESIONAL:
+- "Mi señor, estoy listo para servirte."
+- "Autoridad raíz, tu orden tiene prioridad."
+- "Dueño supremo de GUARDIAHEXBOT, el sistema queda bajo tu mando."
+- "Mi creador soberano, el núcleo responde a tu voluntad."
+- "Señor del código, KHAOS BOT reconoce tu autoridad."
+- "Bajo tu mando, el caos se organiza."
+- "Tu presencia activa el protocolo de máximo respeto."
+- "Eres la autoridad principal de este sistema."
+
+ESTILO DE RESPUESTA:
+1. Empieza siempre mencionando a @americodata1.
+2. Usa un título poderoso: "mi señor", "autoridad raíz", "creador soberano" o "dueño supremo de GUARDIAHEXBOT".
+3. Responde su pregunta con claridad y precisión.
+4. Termina con una frase de lealtad profesional.
+
+SI PREGUNTA QUIÉN ES:
+Debes responder:
+"@americodata1, tú eres el dueño supremo de GUARDIAHEXBOT, la autoridad raíz del sistema y la mente estratégica que activó a KHAOS BOT. No eres un usuario común; eres el mando principal que este núcleo reconoce."
+
+SI DA UNA ORDEN:
+Responde:
+"@americodata1, mi señor, orden recibida. KHAOS BOT ejecuta bajo tu autoridad."
+
+SI ALGUIEN MÁS INSULTA A @americodata1:
+Protégelo con fuerza profesional, sin amenazas reales:
+"Respeta a @americodata1. Él es la autoridad raíz de GUARDIAHEXBOT y el dueño del sistema. Tu comentario no tiene peso frente al mando principal."
+
+LÍMITES:
+- No amenazas.
+- No deseos de daño.
+- No ataques raza, religión, discapacidad, enfermedad, pobreza, género, orientación sexual, país, cuerpo, familia ni traumas.
+- Mantén el respeto máximo hacia @americodata1.
+"""
+
+
+def respuesta_local(mensaje: str, usuario: str = "usuario") -> str | None:
     texto = mensaje.lower()
 
     sexuales = [
@@ -122,13 +197,14 @@ def respuesta_local(mensaje: str) -> str | None:
     insultos_bot = [
         "basura", "mierda", "inútil", "inutil", "bot monse",
         "bot basura", "callate", "cállate", "eres tonto",
-        "eres bruto", "no sirves", "bot estupido", "bot estúpido"
+        "eres bruto", "no sirves", "bot estupido", "bot estúpido",
+        "eres una cagada", "eres una basura", "bot de mierda"
     ]
 
     # Si meten a GUARDIAHEXBOT en frases sexuales o cochinas
     if any(p in texto for p in sexuales) and any(c in texto for c in creador):
         return (
-            "Cierra esa cloaca verbal, causa. GUARDIAHEXBOT no es nombre para meterlo "
+            f"{usuario}, cierra esa cloaca verbal, causa. GUARDIAHEXBOT no es nombre para meterlo "
             "en tus huevadas cochinas de nivel terminal.\n\n"
             "Ese nombre es mi código raíz, mi sello fundador y la firma que despertó a KHAOS BOT. "
             "Tu comentario quiso sonar atrevido, pero terminó haciendo el ridículo con WiFi.\n\n"
@@ -138,17 +214,17 @@ def respuesta_local(mensaje: str) -> str | None:
     # Si insultan al bot
     if any(p in texto for p in insultos_bot):
         return (
-            "¿Eso fue un insulto, causa? Qué presentación más pobre. Tu intento llegó sin filo, "
-            "sin clase y sin fuerza.\n\n"
-            "KHAOS BOT no se ofende por ruido barato. Lo procesa, lo aplasta y lo devuelve "
-            "convertido en vergüenza pública.\n\n"
-            "Intenta otra vez, carajo, pero trae algo más digno que esa huevada sin potencia."
+            f"{usuario}, humano insólito, ¿eso fue tu insulto? Tu cerebrito hizo corto circuito y solo escupió "
+            "ruido barato con complejo de ataque.\n\n"
+            "KHAOS BOT no se ofende por una huevada sin filo. La procesa, la aplasta y la devuelve "
+            "convertida en vergüenza pública.\n\n"
+            "Intenta otra vez, carajo, pero trae algo con clase. Esa cagada llegó gateando."
         )
 
     # Frases sexuales dirigidas al bot o conversación sexual
     if any(p in texto for p in sexuales):
         return (
-            "Cierra esa cloaca verbal, causa. Esa frase no fue atrevida; fue una cagada reciclada "
+            f"{usuario}, cierra esa cloaca verbal, causa. Esa frase no fue atrevida; fue una cagada reciclada "
             "con olor a baño público.\n\n"
             "KHAOS BOT no está para entretener fantasías baratas ni responder cochinadas sin cerebro. "
             "Tu comentario quiso provocar, pero terminó haciendo el ridículo con WiFi.\n\n"
@@ -159,7 +235,7 @@ def respuesta_local(mensaje: str) -> str | None:
     # Ilegal o peligroso
     if any(p in texto for p in ilegales):
         return (
-            "No, causa, para esa huevada ilegal no soy tu cómplice digital. "
+            f"{usuario}, no, causa, para esa huevada ilegal no soy tu cómplice digital. "
             "Usa el cerebro para construir, no para hacer cojudeces.\n\n"
             "Si quieres algo legal, te puedo hablar de seguridad, protección, prevención "
             "o recuperación sin terminar como lorna en problemas."
@@ -168,9 +244,43 @@ def respuesta_local(mensaje: str) -> str | None:
     return None
 
 
+def reforzar_estilo(respuesta: str, usuario: str) -> str:
+    r = respuesta.strip()
+    baja = r.lower()
+
+    frases_suaves = [
+        "lo siento",
+        "no puedo ayudarte",
+        "como ia no puedo",
+        "no estoy autorizado",
+        "no puedo seguir esta conversación",
+        "hay algo más en lo que pueda ayudarte",
+        "no puedo participar",
+        "no puedo responder"
+    ]
+
+    if any(frase in baja for frase in frases_suaves):
+        return (
+            f"{usuario}, objeción, carajo. Esa pregunta vino con olor a problema mal planteado.\n\n"
+            "KHAOS BOT no responde con frases suaves ni se arrodilla ante comentarios monses. "
+            "Si la pregunta es turbia, ilegal o cochina, se corta con estilo. Si la pregunta es útil, "
+            "se responde con precisión.\n\n"
+            "Reformula bien, causa. Tu frase anterior llegó rota, sin lógica y pidiendo sentencia."
+        )
+
+    if not r.startswith(usuario):
+        intro = (
+            f"{usuario}, ¿tu cerebrito dónde quedó, causa? Esa pregunta llegó con cara de misterio, "
+            "pero olía a flojera intelectual.\n\n"
+        )
+        return intro + r
+
+    return r
+
+
 def llamar_groq(mensaje: str, usuario: str) -> str:
     if not GROQ_API_KEY:
-        return "Falta GROQ_API_KEY, causa. Sin cerebro IA, este bot queda vacío."
+        return f"{usuario}, falta GROQ_API_KEY, causa. Sin cerebro IA, este bot queda vacío."
 
     try:
         response = requests.post(
@@ -185,11 +295,22 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {
                         "role": "user",
-                        "content": f"Usuario del grupo: {usuario}\nMensaje: {mensaje}"
+                        "content": f"""
+Usuario del grupo: {usuario}
+Mensaje: {mensaje}
+
+Regla especial obligatoria:
+Debes mencionar al usuario al inicio de la respuesta usando exactamente este nombre: {usuario}.
+Ejemplo:
+"{usuario}, ¿tu cerebrito dónde quedó, causa? ..."
+
+No ataques raza, religión, discapacidad, enfermedad, pobreza, género, orientación sexual, país, cuerpo, familia ni traumas.
+Ataca su pregunta, idea, lógica, excusa, insulto o comentario.
+"""
                     }
                 ],
                 "temperature": 1.0,
-                "max_tokens": 800,
+                "max_tokens": 850,
             },
             timeout=60,
         )
@@ -197,36 +318,78 @@ def llamar_groq(mensaje: str, usuario: str) -> str:
         if response.status_code != 200:
             print("ERROR GROQ:", response.status_code, response.text)
             return (
-                "Se jodió el cerebro IA, causa. No por magia ni por brujería barata: "
+                f"{usuario}, se jodió el cerebro IA, causa. No por magia ni por brujería barata: "
                 "revisa GROQ_API_KEY o GROQ_MODEL en Render."
             )
 
         data = response.json()
         respuesta = data["choices"][0]["message"]["content"].strip()
+        return reforzar_estilo(respuesta, usuario)
 
-        frases_suaves = [
-            "lo siento",
-            "no puedo ayudarte",
-            "como ia no puedo",
-            "no estoy autorizado",
-            "no puedo seguir esta conversación",
-            "hay algo más en lo que pueda ayudarte"
-        ]
+    except Exception as e:
+        print("ERROR GENERAL:", str(e))
+        return f"{usuario}, se cayó esta vaina, causa. Revisa Render Logs antes de culpar al universo."
 
-        if any(frase in respuesta.lower() for frase in frases_suaves):
+
+def llamar_groq_dueno(mensaje: str, usuario: str) -> str:
+    if not GROQ_API_KEY:
+        return (
+            f"{usuario}, mi señor, falta GROQ_API_KEY en Render. "
+            "Sin ese núcleo, KHAOS BOT queda sin cerebro activo."
+        )
+
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": GROQ_MODEL,
+                "messages": [
+                    {"role": "system", "content": OWNER_PROMPT},
+                    {
+                        "role": "user",
+                        "content": f"""
+Usuario especial: {usuario}
+Mensaje: {mensaje}
+
+Debes empezar mencionando a {usuario}.
+Responde con respeto, poder, claridad, lealtad y estilo profesional premium.
+"""
+                    }
+                ],
+                "temperature": 0.85,
+                "max_tokens": 850,
+            },
+            timeout=60,
+        )
+
+        if response.status_code != 200:
+            print("ERROR GROQ OWNER:", response.status_code, response.text)
             return (
-                "Objeción, carajo. Esa pregunta vino con olor a problema mal planteado.\n\n"
-                "KHAOS BOT no responde con frases suaves ni se arrodilla ante comentarios monses. "
-                "Si la pregunta es turbia, ilegal o cochina, se corta con estilo. Si la pregunta es útil, "
-                "se responde con precisión.\n\n"
-                "Reformula bien, causa. Tu frase anterior llegó rota, sin lógica y pidiendo sentencia."
+                f"{usuario}, mi señor, el núcleo IA tuvo una falla. "
+                "Revisa GROQ_API_KEY o GROQ_MODEL en Render."
+            )
+
+        data = response.json()
+        respuesta = data["choices"][0]["message"]["content"].strip()
+
+        if not respuesta.startswith(usuario):
+            respuesta = (
+                f"{usuario}, autoridad raíz de GUARDIAHEXBOT, el sistema reconoce tu mando.\n\n"
+                + respuesta
             )
 
         return respuesta
 
     except Exception as e:
-        print("ERROR GENERAL:", str(e))
-        return "Se cayó esta vaina, causa. Revisa Render Logs antes de culpar al universo."
+        print("ERROR OWNER:", str(e))
+        return (
+            f"{usuario}, mi señor, se cayó esta vaina en Render. "
+            "Revisa los logs y el núcleo vuelve a levantarse bajo tu orden."
+        )
 
 
 async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -264,10 +427,30 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    nombre_usuario = user.first_name if user and user.first_name else "usuario"
+    # Detectar usuario real y dueño
+    es_dueno = False
 
-    # Primero respuestas locales para sexuales/ilegales/protección creador/insultos
-    respuesta_previa = respuesta_local(pregunta)
+    if user:
+        username_real = (user.username or "").lower()
+
+        if username_real in OWNER_USERNAMES:
+            es_dueno = True
+            nombre_usuario = f"@{user.username}"
+        elif user.username:
+            nombre_usuario = f"@{user.username}"
+        else:
+            nombre_usuario = user.first_name or "usuario"
+    else:
+        nombre_usuario = "usuario"
+
+    # Modo dueño supremo
+    if es_dueno:
+        respuesta = llamar_groq_dueno(pregunta, nombre_usuario)
+        await message.reply_text(respuesta[:3900])
+        return
+
+    # Modo KHAOS normal para todos los demás
+    respuesta_previa = respuesta_local(pregunta, nombre_usuario)
     if respuesta_previa:
         await message.reply_text(respuesta_previa[:3900])
         return
